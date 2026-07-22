@@ -107,6 +107,29 @@ def test_not_charging_skips() -> None:
     assert decision.average_power == pytest.approx(99999.0)
 
 
+def test_preview_computed_while_not_charging() -> None:
+    """Delta and next current are previewed even while idle, never applied."""
+    controller = LoadBalanceController(make_config(gain=1.0, max_step=2.0))
+    # Error = +2300 W -> raw +10 A, step-limited to +2 A -> 18 A projected.
+    decision = controller.compute(
+        make_inputs(charging=False, grid_power=4700.0, actual_current=16.0)
+    )
+    assert decision.action is ControlAction.NONE  # nothing is written
+    assert decision.reason is Reason.NOT_CHARGING
+    assert decision.delta_raw == pytest.approx(10.0)
+    assert decision.delta_limited == pytest.approx(2.0)
+    assert decision.new_current == pytest.approx(18.0)
+
+
+def test_preview_within_deadband_shows_zero_delta() -> None:
+    """Inside the deadband the preview reports a zero step and no movement."""
+    controller = LoadBalanceController(make_config(deadband=300.0))
+    decision = controller.compute(make_inputs(grid_power=7250.0, actual_current=16.0))
+    assert decision.reason is Reason.WITHIN_DEADBAND
+    assert decision.delta_limited == pytest.approx(0.0)
+    assert decision.new_current == pytest.approx(16.0)
+
+
 def test_average_stays_warm_while_not_charging() -> None:
     """Grid power is sampled even while idle, so the average is pre-warmed."""
     controller = LoadBalanceController(make_config(min_change_interval=0.0))

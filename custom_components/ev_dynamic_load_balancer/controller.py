@@ -139,7 +139,15 @@ class ControllerInputs:
 
 @dataclass(frozen=True, slots=True)
 class ControlDecision:
-    """The outcome of one controller cycle."""
+    """The outcome of one controller cycle.
+
+    ``new_current``, ``delta_raw`` and ``delta_limited`` are populated on
+    every cycle where the inputs allow computing them — including cycles
+    whose ``action`` is :attr:`ControlAction.NONE`.  In that case they are a
+    *preview* of what the controller would do; only decisions with
+    :attr:`ControlAction.SET_CURRENT` must actually be written to the
+    charger.
+    """
 
     action: ControlAction
     reason: Reason
@@ -296,14 +304,36 @@ class LoadBalanceController:
             error = cfg.target_power - average
         samples = len(self._samples)
 
-        # 1. Vehicle not charging -> nothing to control.
+        # Preview the full proportional pipeline whenever the inputs allow it,
+        # regardless of the charging state.  This keeps the delta / next
+        # current diagnostics live at all times; the preview is only *applied*
+        # further down, where charging and all the guards are enforced.
+        delta_raw: float | None = None
+        delta_limited: float | None = None
+        projected: float | None = None
+        if error is not None and inputs.actual_current is not None:
+            delta_raw = (error / cfg.watts_per_amp) * cfg.gain
+            if abs(error) <= cfg.deadband:
+                delta_limited = 0.0
+                projected = inputs.actual_current
+            else:
+                delta_limited = max(-cfg.max_step, min(cfg.max_step, delta_raw))
+                projected = self._clamp(
+                    self._quantize(inputs.actual_current + delta_limited)
+                )
+
+        # 1. Vehicle not charging -> nothing to control (preview only).
         if not inputs.charging:
             self._pending = None
             return self._decide(
                 ControlAction.NONE,
                 Reason.NOT_CHARGING,
+                new_current=projected,
+                previous_current=inputs.actual_current,
                 error=error,
                 average_power=average,
+                delta_raw=delta_raw,
+                delta_limited=delta_limited,
                 sample_count=samples,
             )
 
@@ -317,6 +347,8 @@ class LoadBalanceController:
                 sample_count=samples,
             )
         assert average is not None and error is not None  # sample was added
+        assert delta_raw is not None and delta_limited is not None
+        assert projected is not None
 
         # Emergency mode uses the *instantaneous* grid power and bypasses the
         # proportional controller, deadband and rate limiting entirely.
@@ -368,9 +400,12 @@ class LoadBalanceController:
                 return self._decide(
                     ControlAction.NONE,
                     Reason.AWAITING_RESPONSE,
+                    new_current=projected,
                     previous_current=inputs.actual_current,
                     error=error,
                     average_power=average,
+                    delta_raw=delta_raw,
+                    delta_limited=delta_limited,
                     sample_count=samples,
                 )
 
@@ -379,18 +414,18 @@ class LoadBalanceController:
             return self._decide(
                 ControlAction.NONE,
                 Reason.WITHIN_DEADBAND,
+                new_current=projected,
                 previous_current=inputs.actual_current,
                 error=error,
                 average_power=average,
+                delta_raw=delta_raw,
+                delta_limited=delta_limited,
                 sample_count=samples,
             )
 
-        # 5-7. Proportional term: Watts -> Amps, apply gain, limit the step.
-        delta_raw = (error / cfg.watts_per_amp) * cfg.gain
-        delta_limited = max(-cfg.max_step, min(cfg.max_step, delta_raw))
-
-        # 8-9. New setpoint, clamped to the configured current limits.
-        new_current = self._clamp(self._quantize(inputs.actual_current + delta_limited))
+        # 5-9. The proportional pipeline (Watts -> Amps, gain, step limit,
+        # quantization, clamping) was already computed in the preview above.
+        new_current = projected
 
         # 10. Quantization / clamping may cancel the change entirely.
         if abs(new_current - inputs.actual_current) < CURRENT_EPSILON:
