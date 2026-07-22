@@ -1,13 +1,13 @@
 {
   "domain": "ev_dynamic_load_balancer",
   "name": "EV Dynamic Load Balancer",
-  "codeowners": ["@mlsettimo"],
+  "codeowners": ["@matias53"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/mlsettimo/VariableChargeController",
+  "documentation": "https://github.com/matias53/VariableChargeController",
   "integration_type": "service",
   "iot_class": "calculated",
-  "issue_tracker": "https://github.com/mlsettimo/VariableChargeController/issues",
+  "issue_tracker": "https://github.com/matias53/VariableChargeController/issues",
   "requirements": [],
   "version": "1.0.0"
 }
