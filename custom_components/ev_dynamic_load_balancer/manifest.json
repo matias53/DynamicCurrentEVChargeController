@@ -4,10 +4,10 @@
   "codeowners": ["@matias53"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/matias53/VariableChargeController",
+  "documentation": "https://github.com/matias53/DynamicCurrentEVChargeController",
   "integration_type": "service",
   "iot_class": "calculated",
-  "issue_tracker": "https://github.com/matias53/VariableChargeController/issues",
+  "issue_tracker": "https://github.com/matias53/DynamicCurrentEVChargeController/issues",
   "requirements": [],
   "version": "1.0.0"
 }
