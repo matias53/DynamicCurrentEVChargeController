@@ -185,6 +185,39 @@ class EVDLBCoordinator(DataUpdateCoordinator[EVDLBData]):
         )
 
     # ------------------------------------------------------------------
+    # Configuration updates
+    # ------------------------------------------------------------------
+    def needs_reload(self) -> bool:
+        """Return True when the changed options require a full reload.
+
+        Only changes to the selected source entities require rebuilding the
+        coordinator; all tuning parameters can be applied in place.
+        """
+        config = merged_config(self.config_entry)
+        return (
+            config[CONF_GRID_POWER_ENTITY] != self._grid_power_entity
+            or config[CONF_CHARGER_POWER_ENTITY] != self._charger_power_entity
+            or config[CONF_CHARGING_STATUS_ENTITY] != self._charging_status_entity
+            or config[CONF_CHARGING_CURRENT_ENTITY] != self._charging_current_entity
+        )
+
+    async def async_apply_options(self) -> None:
+        """Apply changed tuning options without reloading the entry.
+
+        The moving average buffer, pending command state and statistics all
+        survive the update.
+        """
+        config = merged_config(self.config_entry)
+        self.controller.update_config(build_controller_config(config))
+        self.update_interval = timedelta(
+            seconds=int(config.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL))
+        )
+        _LOGGER.debug(
+            "Applied updated options in place for %s", self.config_entry.entry_id
+        )
+        await self.async_request_refresh()
+
+    # ------------------------------------------------------------------
     # Enable / pause API (used by the switch entity and services)
     # ------------------------------------------------------------------
     @property

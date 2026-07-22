@@ -20,6 +20,7 @@ from .services import async_setup_services
 
 PLATFORMS: Final[list[Platform]] = [
     Platform.BINARY_SENSOR,
+    Platform.NUMBER,
     Platform.SENSOR,
     Platform.SWITCH,
 ]
@@ -48,8 +49,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: EVDLBConfigEntry) -> boo
 
 
 async def _async_update_listener(hass: HomeAssistant, entry: EVDLBConfigEntry) -> None:
-    """Reload the config entry when options change."""
-    await hass.config_entries.async_reload(entry.entry_id)
+    """Handle options updates.
+
+    A full reload is only needed when the selected source entities changed;
+    tuning parameters are applied in place so the controller state (moving
+    average buffer, statistics) survives adjustments.
+    """
+    coordinator = entry.runtime_data.coordinator
+    if coordinator.needs_reload():
+        await hass.config_entries.async_reload(entry.entry_id)
+    else:
+        await coordinator.async_apply_options()
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: EVDLBConfigEntry) -> bool:

@@ -84,8 +84,8 @@ class ControllerConfig:
 
     def __post_init__(self) -> None:
         """Validate configuration invariants."""
-        if self.target_power <= 0:
-            raise ValueError("target_power must be positive")
+        if self.target_power < 0:
+            raise ValueError("target_power must not be negative")
         if self.emergency_power <= self.target_power:
             raise ValueError("emergency_power must be greater than target_power")
         if self.voltage <= 0:

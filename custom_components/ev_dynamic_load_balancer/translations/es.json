@@ -212,6 +212,41 @@
       "enabled": {
         "name": "Habilitado"
       }
+    },
+    "number": {
+      "target_power_setting": {
+        "name": "Potencia objetivo"
+      },
+      "emergency_power_setting": {
+        "name": "Potencia de emergencia"
+      },
+      "min_current_setting": {
+        "name": "Corriente mínima"
+      },
+      "max_current_setting": {
+        "name": "Corriente máxima"
+      },
+      "deadband_setting": {
+        "name": "Banda muerta"
+      },
+      "max_step_setting": {
+        "name": "Cambio máximo de corriente por ciclo"
+      },
+      "gain_setting": {
+        "name": "Ganancia"
+      },
+      "average_window_setting": {
+        "name": "Ventana de media móvil"
+      },
+      "response_timeout_setting": {
+        "name": "Tiempo de espera de respuesta"
+      },
+      "min_change_interval_setting": {
+        "name": "Tiempo mínimo entre cambios"
+      },
+      "emergency_reduction_setting": {
+        "name": "Reducción de emergencia"
+      }
     }
   },
   "services": {
@@ -285,6 +320,9 @@
     },
     "no_entries_loaded": {
       "message": "No hay ninguna instancia de EV Dynamic Load Balancer cargada actualmente."
+    },
+    "invalid_tuning": {
+      "message": "Valor inválido: {error}"
     }
   }
 }

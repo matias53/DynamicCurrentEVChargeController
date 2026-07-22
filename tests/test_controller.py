@@ -71,7 +71,7 @@ def make_inputs(
 @pytest.mark.parametrize(
     "overrides",
     [
-        {"target_power": 0.0},
+        {"target_power": -1.0},
         {"emergency_power": 6000.0},  # below target
         {"voltage": 0.0},
         {"min_current": -1.0},
@@ -199,6 +199,29 @@ def test_gain_scales_delta() -> None:
     decision = controller.compute(make_inputs(grid_power=6080.0, actual_current=16.0))
     assert decision.delta_raw == pytest.approx(2.0)
     assert decision.new_current == pytest.approx(18.0)
+
+
+def test_negative_grid_power_increases_current() -> None:
+    """Solar export (negative grid power) raises the charging current."""
+    # Average = -2000 W (exporting) -> error 9000 W -> raw delta huge,
+    # limited to +max_step.
+    controller = LoadBalanceController(make_config(gain=1.0, max_step=2.0))
+    decision = controller.compute(make_inputs(grid_power=-2000.0, actual_current=16.0))
+    assert decision.action is ControlAction.SET_CURRENT
+    assert decision.error == pytest.approx(9000.0)
+    assert decision.delta_limited == pytest.approx(2.0)
+    assert decision.new_current == pytest.approx(18.0)
+
+
+def test_zero_target_power_allowed() -> None:
+    """A 0 W target (surplus-only charging) is a valid configuration."""
+    controller = LoadBalanceController(
+        make_config(target_power=0.0, emergency_power=500.0, gain=1.0, max_step=5.0)
+    )
+    # Importing 460 W -> error -460 -> reduce by 2 A.
+    decision = controller.compute(make_inputs(grid_power=460.0, actual_current=16.0))
+    assert decision.action is ControlAction.SET_CURRENT
+    assert decision.new_current == pytest.approx(14.0)
 
 
 # ---------------------------------------------------------------------------

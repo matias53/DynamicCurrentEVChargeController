@@ -212,6 +212,41 @@
       "enabled": {
         "name": "Enabled"
       }
+    },
+    "number": {
+      "target_power_setting": {
+        "name": "Target power"
+      },
+      "emergency_power_setting": {
+        "name": "Emergency power"
+      },
+      "min_current_setting": {
+        "name": "Minimum current"
+      },
+      "max_current_setting": {
+        "name": "Maximum current"
+      },
+      "deadband_setting": {
+        "name": "Deadband"
+      },
+      "max_step_setting": {
+        "name": "Max current change per cycle"
+      },
+      "gain_setting": {
+        "name": "Gain"
+      },
+      "average_window_setting": {
+        "name": "Moving average window"
+      },
+      "response_timeout_setting": {
+        "name": "Response timeout"
+      },
+      "min_change_interval_setting": {
+        "name": "Min time between changes"
+      },
+      "emergency_reduction_setting": {
+        "name": "Emergency reduction"
+      }
     }
   },
   "services": {
@@ -285,6 +320,9 @@
     },
     "no_entries_loaded": {
       "message": "No EV Dynamic Load Balancer instances are currently loaded."
+    },
+    "invalid_tuning": {
+      "message": "Invalid value: {error}"
     }
   }
 }

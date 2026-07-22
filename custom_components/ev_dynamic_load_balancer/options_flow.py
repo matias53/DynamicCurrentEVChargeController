@@ -104,7 +104,7 @@ def build_electrical_schema(defaults: Mapping[str, Any]) -> vol.Schema:
                 default=defaults.get(CONF_TARGET_POWER, DEFAULT_TARGET_POWER),
             ): NumberSelector(
                 NumberSelectorConfig(
-                    min=500,
+                    min=0,
                     max=100_000,
                     step=100,
                     unit_of_measurement=UnitOfPower.WATT,
