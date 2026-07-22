@@ -1,0 +1,290 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Seleccionar entidades",
+        "description": "Elige las entidades existentes que el balanceador de carga debe utilizar. Funciona con cualquier fabricante mientras existan estas entidades.",
+        "data": {
+          "grid_power_entity": "Sensor de potencia de red",
+          "charger_power_entity": "Sensor de potencia del cargador",
+          "charging_status_entity": "Entidad de estado de carga",
+          "charging_current_entity": "Entidad number de corriente de carga"
+        },
+        "data_description": {
+          "grid_power_entity": "Sensor que mide la potencia instantánea importada de la red (W o kW).",
+          "charger_power_entity": "Sensor que mide la potencia del cargador del vehículo (W o kW).",
+          "charging_status_entity": "Entidad que está en ON mientras el vehículo está cargando.",
+          "charging_current_entity": "Entidad number que fija la corriente de carga en Amperios."
+        }
+      },
+      "electrical": {
+        "title": "Parámetros eléctricos",
+        "description": "Describe tu instalación eléctrica y los límites que el controlador debe respetar.",
+        "data": {
+          "target_power": "Potencia objetivo",
+          "emergency_power": "Potencia de emergencia",
+          "voltage": "Tensión",
+          "phases": "Fases",
+          "min_current": "Corriente mínima",
+          "max_current": "Corriente máxima"
+        },
+        "data_description": {
+          "target_power": "El controlador mantiene la potencia importada de la red en o por debajo de este valor.",
+          "emergency_power": "Por encima de este valor la corriente se reduce inmediatamente, ignorando el controlador normal.",
+          "voltage": "Tensión nominal de fase de tu instalación.",
+          "phases": "Si el cargador está conectado en monofásico o trifásico.",
+          "min_current": "La corriente de carga nunca se fija por debajo de este valor.",
+          "max_current": "La corriente de carga nunca se fija por encima de este valor."
+        }
+      },
+      "control": {
+        "title": "Ajuste del controlador",
+        "description": "Ajusta el comportamiento del controlador proporcional. Los valores por defecto funcionan bien en la mayoría de instalaciones.",
+        "data": {
+          "update_interval": "Intervalo de ejecución",
+          "deadband": "Banda muerta",
+          "max_step": "Cambio máximo de corriente por ciclo",
+          "gain": "Ganancia",
+          "average_window": "Ventana de media móvil",
+          "response_timeout": "Tiempo de espera de respuesta",
+          "min_change_interval": "Tiempo mínimo entre cambios de corriente",
+          "emergency_reduction": "Reducción de emergencia",
+          "current_step": "Resolución de corriente"
+        },
+        "data_description": {
+          "update_interval": "Con qué frecuencia el controlador evalúa la situación.",
+          "deadband": "Mientras la potencia media de red esté dentro de esta banda alrededor del objetivo, no se hacen cambios.",
+          "max_step": "La corriente nunca cambia más que este valor en un solo ciclo.",
+          "gain": "Ganancia proporcional. Valores bajos reaccionan con más suavidad, valores altos con más agresividad.",
+          "average_window": "Longitud de la media móvil aplicada a la potencia de red.",
+          "response_timeout": "Tras escribir una nueva corriente, esperar como máximo este tiempo a que reaccione la potencia del cargador.",
+          "min_change_interval": "Tiempo mínimo que debe pasar entre dos cambios de corriente consecutivos.",
+          "emergency_reduction": "Cuántos Amperios reducir inmediatamente al superar el umbral de emergencia.",
+          "current_step": "Resolución a la que se redondea la corriente calculada antes de escribirla (la mayoría de cargadores aceptan Amperios enteros)."
+        }
+      }
+    },
+    "error": {
+      "emergency_below_target": "La potencia de emergencia debe ser mayor que la potencia objetivo.",
+      "max_below_min": "La corriente máxima debe ser mayor que la corriente mínima."
+    },
+    "abort": {
+      "already_configured": "Ya existe un balanceador configurado para esta entidad de corriente de carga."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Seleccionar entidades",
+        "description": "Elige las entidades existentes que el balanceador de carga debe utilizar.",
+        "data": {
+          "grid_power_entity": "Sensor de potencia de red",
+          "charger_power_entity": "Sensor de potencia del cargador",
+          "charging_status_entity": "Entidad de estado de carga",
+          "charging_current_entity": "Entidad number de corriente de carga"
+        },
+        "data_description": {
+          "grid_power_entity": "Sensor que mide la potencia instantánea importada de la red (W o kW).",
+          "charger_power_entity": "Sensor que mide la potencia del cargador del vehículo (W o kW).",
+          "charging_status_entity": "Entidad que está en ON mientras el vehículo está cargando.",
+          "charging_current_entity": "Entidad number que fija la corriente de carga en Amperios."
+        }
+      },
+      "electrical": {
+        "title": "Parámetros eléctricos",
+        "description": "Describe tu instalación eléctrica y los límites que el controlador debe respetar.",
+        "data": {
+          "target_power": "Potencia objetivo",
+          "emergency_power": "Potencia de emergencia",
+          "voltage": "Tensión",
+          "phases": "Fases",
+          "min_current": "Corriente mínima",
+          "max_current": "Corriente máxima"
+        },
+        "data_description": {
+          "target_power": "El controlador mantiene la potencia importada de la red en o por debajo de este valor.",
+          "emergency_power": "Por encima de este valor la corriente se reduce inmediatamente, ignorando el controlador normal.",
+          "voltage": "Tensión nominal de fase de tu instalación.",
+          "phases": "Si el cargador está conectado en monofásico o trifásico.",
+          "min_current": "La corriente de carga nunca se fija por debajo de este valor.",
+          "max_current": "La corriente de carga nunca se fija por encima de este valor."
+        }
+      },
+      "control": {
+        "title": "Ajuste del controlador",
+        "description": "Ajusta el comportamiento del controlador proporcional.",
+        "data": {
+          "update_interval": "Intervalo de ejecución",
+          "deadband": "Banda muerta",
+          "max_step": "Cambio máximo de corriente por ciclo",
+          "gain": "Ganancia",
+          "average_window": "Ventana de media móvil",
+          "response_timeout": "Tiempo de espera de respuesta",
+          "min_change_interval": "Tiempo mínimo entre cambios de corriente",
+          "emergency_reduction": "Reducción de emergencia",
+          "current_step": "Resolución de corriente"
+        },
+        "data_description": {
+          "update_interval": "Con qué frecuencia el controlador evalúa la situación.",
+          "deadband": "Mientras la potencia media de red esté dentro de esta banda alrededor del objetivo, no se hacen cambios.",
+          "max_step": "La corriente nunca cambia más que este valor en un solo ciclo.",
+          "gain": "Ganancia proporcional. Valores bajos reaccionan con más suavidad, valores altos con más agresividad.",
+          "average_window": "Longitud de la media móvil aplicada a la potencia de red.",
+          "response_timeout": "Tras escribir una nueva corriente, esperar como máximo este tiempo a que reaccione la potencia del cargador.",
+          "min_change_interval": "Tiempo mínimo que debe pasar entre dos cambios de corriente consecutivos.",
+          "emergency_reduction": "Cuántos Amperios reducir inmediatamente al superar el umbral de emergencia.",
+          "current_step": "Resolución a la que se redondea la corriente calculada antes de escribirla."
+        }
+      }
+    },
+    "error": {
+      "emergency_below_target": "La potencia de emergencia debe ser mayor que la potencia objetivo.",
+      "max_below_min": "La corriente máxima debe ser mayor que la corriente mínima."
+    }
+  },
+  "selector": {
+    "phases": {
+      "options": {
+        "single": "Monofásico",
+        "three": "Trifásico"
+      }
+    },
+    "update_interval": {
+      "options": {
+        "5": "5 segundos",
+        "10": "10 segundos",
+        "15": "15 segundos",
+        "20": "20 segundos",
+        "30": "30 segundos",
+        "60": "60 segundos",
+        "90": "90 segundos",
+        "120": "120 segundos"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "error": {
+        "name": "Error de control"
+      },
+      "average_grid_power": {
+        "name": "Potencia media de red"
+      },
+      "target_power": {
+        "name": "Potencia objetivo"
+      },
+      "delta_current": {
+        "name": "Delta de corriente"
+      },
+      "next_current": {
+        "name": "Próxima corriente"
+      },
+      "last_execution": {
+        "name": "Última ejecución"
+      },
+      "last_reason": {
+        "name": "Último motivo",
+        "state": {
+          "not_charging": "No está cargando",
+          "invalid_input": "Entrada inválida",
+          "awaiting_response": "Esperando respuesta del cargador",
+          "within_deadband": "Dentro de la banda muerta",
+          "no_change": "Sin cambios necesarios",
+          "rate_limited": "Limitado por frecuencia",
+          "adjustment": "Ajuste aplicado",
+          "emergency": "Reducción de emergencia",
+          "emergency_at_minimum": "Emergencia, ya en el mínimo",
+          "disabled": "Deshabilitado",
+          "paused": "Pausado",
+          "write_failed": "Fallo de escritura"
+        }
+      }
+    },
+    "binary_sensor": {
+      "controller_active": {
+        "name": "Controlador activo"
+      },
+      "emergency": {
+        "name": "Emergencia"
+      }
+    },
+    "switch": {
+      "enabled": {
+        "name": "Habilitado"
+      }
+    }
+  },
+  "services": {
+    "enable": {
+      "name": "Habilitar",
+      "description": "Habilita el controlador de balanceo de carga.",
+      "fields": {
+        "entry_id": {
+          "name": "Instancia",
+          "description": "La instancia del balanceador a la que aplicar. Si se omite, aplica a todas."
+        }
+      }
+    },
+    "disable": {
+      "name": "Deshabilitar",
+      "description": "Deshabilita el controlador de balanceo de carga.",
+      "fields": {
+        "entry_id": {
+          "name": "Instancia",
+          "description": "La instancia del balanceador a la que aplicar. Si se omite, aplica a todas."
+        }
+      }
+    },
+    "pause": {
+      "name": "Pausar",
+      "description": "Pausa temporalmente el controlador sin deshabilitarlo.",
+      "fields": {
+        "entry_id": {
+          "name": "Instancia",
+          "description": "La instancia del balanceador a la que aplicar. Si se omite, aplica a todas."
+        }
+      }
+    },
+    "resume": {
+      "name": "Reanudar",
+      "description": "Reanuda un controlador pausado.",
+      "fields": {
+        "entry_id": {
+          "name": "Instancia",
+          "description": "La instancia del balanceador a la que aplicar. Si se omite, aplica a todas."
+        }
+      }
+    },
+    "force_recalculate": {
+      "name": "Forzar recálculo",
+      "description": "Ejecuta un ciclo del controlador inmediatamente.",
+      "fields": {
+        "entry_id": {
+          "name": "Instancia",
+          "description": "La instancia del balanceador a la que aplicar. Si se omite, aplica a todas."
+        }
+      }
+    },
+    "reset_average": {
+      "name": "Reiniciar media",
+      "description": "Vacía el búfer de la media móvil de potencia de red.",
+      "fields": {
+        "entry_id": {
+          "name": "Instancia",
+          "description": "La instancia del balanceador a la que aplicar. Si se omite, aplica a todas."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "invalid_entry_id": {
+      "message": "No se encontró ninguna entrada de configuración de EV Dynamic Load Balancer con id {entry_id}."
+    },
+    "entry_not_loaded": {
+      "message": "La entrada de configuración {entry_id} no está cargada."
+    },
+    "no_entries_loaded": {
+      "message": "No hay ninguna instancia de EV Dynamic Load Balancer cargada actualmente."
+    }
+  }
+}

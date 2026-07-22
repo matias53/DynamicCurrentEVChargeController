@@ -1,0 +1,290 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Select entities",
+        "description": "Choose the existing entities the load balancer should use. Any manufacturer works as long as these entities exist.",
+        "data": {
+          "grid_power_entity": "Grid power sensor",
+          "charger_power_entity": "Charger power sensor",
+          "charging_status_entity": "Charging status entity",
+          "charging_current_entity": "Charging current number entity"
+        },
+        "data_description": {
+          "grid_power_entity": "Sensor measuring instantaneous imported grid power (W or kW).",
+          "charger_power_entity": "Sensor measuring the EV charger power (W or kW).",
+          "charging_status_entity": "Entity that is ON while the vehicle is charging.",
+          "charging_current_entity": "Number entity that sets the charging current in Amps."
+        }
+      },
+      "electrical": {
+        "title": "Electrical parameters",
+        "description": "Describe your electrical installation and the limits the controller must respect.",
+        "data": {
+          "target_power": "Target power",
+          "emergency_power": "Emergency power",
+          "voltage": "Voltage",
+          "phases": "Phases",
+          "min_current": "Minimum current",
+          "max_current": "Maximum current"
+        },
+        "data_description": {
+          "target_power": "The controller keeps total imported grid power at or below this value.",
+          "emergency_power": "Above this value the current is reduced immediately, bypassing the regular controller.",
+          "voltage": "Nominal phase voltage of your installation.",
+          "phases": "Whether the charger is connected single phase or three phase.",
+          "min_current": "The charging current is never set below this value.",
+          "max_current": "The charging current is never set above this value."
+        }
+      },
+      "control": {
+        "title": "Controller tuning",
+        "description": "Fine tune how the proportional controller behaves. The defaults work well for most installations.",
+        "data": {
+          "update_interval": "Execution interval",
+          "deadband": "Deadband",
+          "max_step": "Maximum current change per cycle",
+          "gain": "Gain",
+          "average_window": "Moving average window",
+          "response_timeout": "Response timeout",
+          "min_change_interval": "Minimum time between current changes",
+          "emergency_reduction": "Emergency reduction",
+          "current_step": "Current resolution"
+        },
+        "data_description": {
+          "update_interval": "How often the controller evaluates the situation.",
+          "deadband": "While the averaged grid power is within this band around the target, no changes are made.",
+          "max_step": "The current is never changed by more than this amount in a single cycle.",
+          "gain": "Proportional gain. Lower values react more gently, higher values more aggressively.",
+          "average_window": "Length of the moving average applied to the grid power.",
+          "response_timeout": "After writing a new current, wait at most this long for the charger power to react.",
+          "min_change_interval": "Minimum time that must pass between two consecutive current changes.",
+          "emergency_reduction": "How many Amps to shed immediately when the emergency threshold is exceeded.",
+          "current_step": "Resolution the computed current is rounded to before writing (most chargers accept whole Amps)."
+        }
+      }
+    },
+    "error": {
+      "emergency_below_target": "Emergency power must be greater than the target power.",
+      "max_below_min": "Maximum current must be greater than the minimum current."
+    },
+    "abort": {
+      "already_configured": "A load balancer for this charging current entity is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Select entities",
+        "description": "Choose the existing entities the load balancer should use.",
+        "data": {
+          "grid_power_entity": "Grid power sensor",
+          "charger_power_entity": "Charger power sensor",
+          "charging_status_entity": "Charging status entity",
+          "charging_current_entity": "Charging current number entity"
+        },
+        "data_description": {
+          "grid_power_entity": "Sensor measuring instantaneous imported grid power (W or kW).",
+          "charger_power_entity": "Sensor measuring the EV charger power (W or kW).",
+          "charging_status_entity": "Entity that is ON while the vehicle is charging.",
+          "charging_current_entity": "Number entity that sets the charging current in Amps."
+        }
+      },
+      "electrical": {
+        "title": "Electrical parameters",
+        "description": "Describe your electrical installation and the limits the controller must respect.",
+        "data": {
+          "target_power": "Target power",
+          "emergency_power": "Emergency power",
+          "voltage": "Voltage",
+          "phases": "Phases",
+          "min_current": "Minimum current",
+          "max_current": "Maximum current"
+        },
+        "data_description": {
+          "target_power": "The controller keeps total imported grid power at or below this value.",
+          "emergency_power": "Above this value the current is reduced immediately, bypassing the regular controller.",
+          "voltage": "Nominal phase voltage of your installation.",
+          "phases": "Whether the charger is connected single phase or three phase.",
+          "min_current": "The charging current is never set below this value.",
+          "max_current": "The charging current is never set above this value."
+        }
+      },
+      "control": {
+        "title": "Controller tuning",
+        "description": "Fine tune how the proportional controller behaves.",
+        "data": {
+          "update_interval": "Execution interval",
+          "deadband": "Deadband",
+          "max_step": "Maximum current change per cycle",
+          "gain": "Gain",
+          "average_window": "Moving average window",
+          "response_timeout": "Response timeout",
+          "min_change_interval": "Minimum time between current changes",
+          "emergency_reduction": "Emergency reduction",
+          "current_step": "Current resolution"
+        },
+        "data_description": {
+          "update_interval": "How often the controller evaluates the situation.",
+          "deadband": "While the averaged grid power is within this band around the target, no changes are made.",
+          "max_step": "The current is never changed by more than this amount in a single cycle.",
+          "gain": "Proportional gain. Lower values react more gently, higher values more aggressively.",
+          "average_window": "Length of the moving average applied to the grid power.",
+          "response_timeout": "After writing a new current, wait at most this long for the charger power to react.",
+          "min_change_interval": "Minimum time that must pass between two consecutive current changes.",
+          "emergency_reduction": "How many Amps to shed immediately when the emergency threshold is exceeded.",
+          "current_step": "Resolution the computed current is rounded to before writing."
+        }
+      }
+    },
+    "error": {
+      "emergency_below_target": "Emergency power must be greater than the target power.",
+      "max_below_min": "Maximum current must be greater than the minimum current."
+    }
+  },
+  "selector": {
+    "phases": {
+      "options": {
+        "single": "Single phase",
+        "three": "Three phase"
+      }
+    },
+    "update_interval": {
+      "options": {
+        "5": "5 seconds",
+        "10": "10 seconds",
+        "15": "15 seconds",
+        "20": "20 seconds",
+        "30": "30 seconds",
+        "60": "60 seconds",
+        "90": "90 seconds",
+        "120": "120 seconds"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "error": {
+        "name": "Control error"
+      },
+      "average_grid_power": {
+        "name": "Average grid power"
+      },
+      "target_power": {
+        "name": "Target power"
+      },
+      "delta_current": {
+        "name": "Delta current"
+      },
+      "next_current": {
+        "name": "Next current"
+      },
+      "last_execution": {
+        "name": "Last execution"
+      },
+      "last_reason": {
+        "name": "Last reason",
+        "state": {
+          "not_charging": "Not charging",
+          "invalid_input": "Invalid input",
+          "awaiting_response": "Awaiting charger response",
+          "within_deadband": "Within deadband",
+          "no_change": "No change needed",
+          "rate_limited": "Rate limited",
+          "adjustment": "Adjustment applied",
+          "emergency": "Emergency reduction",
+          "emergency_at_minimum": "Emergency, already at minimum",
+          "disabled": "Disabled",
+          "paused": "Paused",
+          "write_failed": "Write failed"
+        }
+      }
+    },
+    "binary_sensor": {
+      "controller_active": {
+        "name": "Controller active"
+      },
+      "emergency": {
+        "name": "Emergency"
+      }
+    },
+    "switch": {
+      "enabled": {
+        "name": "Enabled"
+      }
+    }
+  },
+  "services": {
+    "enable": {
+      "name": "Enable",
+      "description": "Enables the load balancing controller.",
+      "fields": {
+        "entry_id": {
+          "name": "Instance",
+          "description": "The load balancer instance to target. Targets all instances when omitted."
+        }
+      }
+    },
+    "disable": {
+      "name": "Disable",
+      "description": "Disables the load balancing controller.",
+      "fields": {
+        "entry_id": {
+          "name": "Instance",
+          "description": "The load balancer instance to target. Targets all instances when omitted."
+        }
+      }
+    },
+    "pause": {
+      "name": "Pause",
+      "description": "Temporarily pauses the controller without disabling it.",
+      "fields": {
+        "entry_id": {
+          "name": "Instance",
+          "description": "The load balancer instance to target. Targets all instances when omitted."
+        }
+      }
+    },
+    "resume": {
+      "name": "Resume",
+      "description": "Resumes a paused controller.",
+      "fields": {
+        "entry_id": {
+          "name": "Instance",
+          "description": "The load balancer instance to target. Targets all instances when omitted."
+        }
+      }
+    },
+    "force_recalculate": {
+      "name": "Force recalculate",
+      "description": "Runs one controller cycle immediately.",
+      "fields": {
+        "entry_id": {
+          "name": "Instance",
+          "description": "The load balancer instance to target. Targets all instances when omitted."
+        }
+      }
+    },
+    "reset_average": {
+      "name": "Reset average",
+      "description": "Clears the moving average buffer of grid power samples.",
+      "fields": {
+        "entry_id": {
+          "name": "Instance",
+          "description": "The load balancer instance to target. Targets all instances when omitted."
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "invalid_entry_id": {
+      "message": "No EV Dynamic Load Balancer config entry found with id {entry_id}."
+    },
+    "entry_not_loaded": {
+      "message": "The config entry {entry_id} is not loaded."
+    },
+    "no_entries_loaded": {
+      "message": "No EV Dynamic Load Balancer instances are currently loaded."
+    }
+  }
+}

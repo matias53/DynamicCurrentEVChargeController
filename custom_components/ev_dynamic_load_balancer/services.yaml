@@ -1,0 +1,47 @@
+enable:
+  fields:
+    entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: ev_dynamic_load_balancer
+
+disable:
+  fields:
+    entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: ev_dynamic_load_balancer
+
+pause:
+  fields:
+    entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: ev_dynamic_load_balancer
+
+resume:
+  fields:
+    entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: ev_dynamic_load_balancer
+
+force_recalculate:
+  fields:
+    entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: ev_dynamic_load_balancer
+
+reset_average:
+  fields:
+    entry_id:
+      required: false
+      selector:
+        config_entry:
+          integration: ev_dynamic_load_balancer
