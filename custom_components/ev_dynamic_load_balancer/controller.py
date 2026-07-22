@@ -283,21 +283,40 @@ class LoadBalanceController:
         cfg = self._config
         self._stats.cycles += 1
 
+        # Feed the moving average with the raw grid power sample whenever one
+        # is available — even while the vehicle is not charging.  This keeps
+        # the average "warm" so the first cycles after charging starts already
+        # act on smoothed data, and makes the average sensor useful at rest.
+        average: float | None = None
+        error: float | None = None
+        if inputs.grid_power is not None:
+            self.add_sample(inputs.now, inputs.grid_power)
+            average = self.average(inputs.now)
+        if average is not None:
+            error = cfg.target_power - average
+        samples = len(self._samples)
+
         # 1. Vehicle not charging -> nothing to control.
         if not inputs.charging:
             self._pending = None
-            return self._decide(ControlAction.NONE, Reason.NOT_CHARGING)
+            return self._decide(
+                ControlAction.NONE,
+                Reason.NOT_CHARGING,
+                error=error,
+                average_power=average,
+                sample_count=samples,
+            )
 
         # 3. Reject invalid states (unknown / unavailable / None).
         if inputs.grid_power is None or inputs.actual_current is None:
-            return self._decide(ControlAction.NONE, Reason.INVALID_INPUT)
-
-        # Feed the moving average with the raw grid power sample.
-        self.add_sample(inputs.now, inputs.grid_power)
-        average = self.average(inputs.now)
-        assert average is not None  # a sample was just added
-        error = cfg.target_power - average
-        samples = len(self._samples)
+            return self._decide(
+                ControlAction.NONE,
+                Reason.INVALID_INPUT,
+                error=error,
+                average_power=average,
+                sample_count=samples,
+            )
+        assert average is not None and error is not None  # sample was added
 
         # Emergency mode uses the *instantaneous* grid power and bypasses the
         # proportional controller, deadband and rate limiting entirely.

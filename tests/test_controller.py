@@ -103,6 +103,38 @@ def test_not_charging_skips() -> None:
     decision = controller.compute(make_inputs(charging=False, grid_power=99999.0))
     assert decision.action is ControlAction.NONE
     assert decision.reason is Reason.NOT_CHARGING
+    # The grid sample is still recorded and reported.
+    assert decision.average_power == pytest.approx(99999.0)
+
+
+def test_average_stays_warm_while_not_charging() -> None:
+    """Grid power is sampled even while idle, so the average is pre-warmed."""
+    controller = LoadBalanceController(make_config(min_change_interval=0.0))
+    for second in range(3):
+        idle = controller.compute(
+            make_inputs(now=float(second), charging=False, grid_power=7000.0)
+        )
+    assert idle.reason is Reason.NOT_CHARGING
+    assert idle.average_power == pytest.approx(7000.0)
+
+    # The first charging cycle immediately acts on the smoothed average
+    # instead of a single raw sample.
+    first = controller.compute(
+        make_inputs(now=3.0, grid_power=8200.0, actual_current=16.0)
+    )
+    assert first.sample_count == 4
+    assert first.average_power == pytest.approx((7000.0 * 3 + 8200.0) / 4)
+    # Average = 7300 -> error -300, inside the deadband: the idle samples
+    # prevented an overreaction to the 8200 W spike.
+    assert first.reason is Reason.WITHIN_DEADBAND
+
+
+def test_not_charging_without_grid_power_has_no_average() -> None:
+    """Idle cycles with an unavailable grid sensor report no average."""
+    controller = LoadBalanceController(make_config())
+    decision = controller.compute(make_inputs(charging=False, grid_power=None))
+    assert decision.reason is Reason.NOT_CHARGING
+    assert decision.average_power is None
 
 
 def test_invalid_grid_power_skips() -> None:
@@ -468,4 +500,5 @@ def test_stats_and_snapshot() -> None:
     snapshot = controller.snapshot()
     assert snapshot["stats"]["cycles"] == 2
     assert snapshot["config"]["target_power"] == 7000.0
-    assert len(snapshot["buffer"]) == 1
+    # Both cycles sampled the grid power (also while not charging).
+    assert len(snapshot["buffer"]) == 2
